@@ -1,455 +1,268 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Little Barbie World for You 🎀</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        :root {
-            --pink-main: #ff69b4;
-            --pink-dark: #e0218a;
-            --pink-light: #fff0f6;
-            --pink-accent: #f48fb1;
-            --bg-color: #fce4ec;
-            --text-color: #4a4a4a;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Container Card */
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            height: 90vh;
-            max-height: 800px;
-            background: #ffffff;
-            border: 6px solid var(--pink-accent);
-            border-radius: 35px;
-            box-shadow: 0 20px 40px rgba(224, 33, 138, 0.2);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .slide-wrapper {
-            flex: 1;
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .slide {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            padding: 30px 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.5s ease-in-out;
-            transform: scale(0.95);
-            background: radial-gradient(circle at top right, #fff0f6 0%, #ffffff 70%);
-            overflow-y: auto;
-        }
-
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
-        }
-
-        .sparkle-bg {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            background-image: radial-gradient(#ff80ab 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.3;
-        }
-
-        /* Typography */
-        h1, h2 {
-            font-family: 'Dancing Script', cursive;
-            color: var(--pink-dark);
-            margin-bottom: 15px;
-        }
-
-        h1 { font-size: 2.6rem; line-height: 1.2; }
-        h2 { font-size: 2.2rem; }
-
-        p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(45deg, var(--pink-dark), var(--pink-main));
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(224, 33, 138, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .btn:active { transform: scale(0.95); }
-
-        /* Envelope */
-        .envelope-box {
-            width: 130px;
-            height: 90px;
-            background: var(--pink-accent);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            margin: 20px 0;
-        }
-
-        .envelope-box:hover { transform: translateY(-5px) rotate(2deg); }
-        .envelope-box i { font-size: 45px; color: white; }
-
-        /* Cards */
-        .card-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .info-card {
-            background: white;
-            border: 2px dashed var(--pink-accent);
-            padding: 14px;
-            border-radius: 18px;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.3s;
-        }
-
-        .info-card.open { background: var(--pink-light); border-style: solid; }
-        .info-card h4 { color: var(--pink-dark); display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
-        .info-card .card-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 0;
-        }
-        .info-card.open .card-content { max-height: 100px; margin-top: 8px; }
-
-        /* Mood Grid */
-        .mood-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .mood-btn {
-            background: white;
-            border: 2px solid var(--pink-accent);
-            padding: 12px;
-            border-radius: 25px;
-            font-weight: 700;
-            color: var(--pink-dark);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .mood-btn:hover { background: var(--pink-main); color: white; }
-        .mood-result { margin-top: 15px; font-weight: 700; color: var(--pink-dark); min-height: 40px; font-size: 0.9rem; }
-
-        /* Deserve List */
-        .deserve-list { text-align: left; width: 100%; margin-bottom: 15px; }
-        .deserve-item {
-            background: var(--pink-light);
-            padding: 12px 15px;
-            border-radius: 15px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: all 0.5s ease;
-        }
-        .deserve-item.show { opacity: 1; transform: translateX(0); }
-
-        /* Photo Booth */
-        .booth-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .booth-avatar {
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            background: var(--pink-light);
-            border: 4px solid var(--pink-dark);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 50px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        }
-        .booth-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .chip {
-            background: #eee;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .chip.active { background: var(--pink-dark); color: white; }
-
-        /* Navigation */
-        .nav-controls {
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 25px;
-            border-top: 1px solid #f0f0f0;
-            background: #fff;
-        }
-        .nav-btn { background: none; border: none; color: var(--pink-accent); font-size: 1.2rem; cursor: pointer; }
-        .nav-btn:disabled { color: #eee; }
-        .slide-dots { display: flex; gap: 6px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #ffd1dc; transition: all 0.3s; }
-        .dot.active { width: 20px; border-radius: 10px; background: var(--pink-dark); }
-    </style>
+    <title>Dunia Barbie Garnis 🎀</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    
-    <div class="app-container">
-        <div class="sparkle-bg"></div>
-        <div class="slide-wrapper">
 
-            <div class="slide active">
-                <i class="fa-solid fa-crown" style="font-size: 40px; color: var(--pink-dark); margin-bottom: 10px;"></i>
-                <h1>Welcome to your little Barbie World ✨</h1>
-                <p>A tiny digital space made especially for you.</p>
-                <button class="btn" onclick="nextSlide()">Enter Barbie World 💗</button>
-            </div>
-
-            <div class="slide">
-                <h2>A Special Delivery 💌</h2>
-                <p>Dear Barbie, there’s a little something waiting for you...</p>
-                <div class="envelope-box" onclick="openEnvelope()">
-                    <i class="fa-solid fa-envelope-open-text" id="env-icon"></i>
-                </div>
-                <p id="env-text" style="font-weight: 600; min-height: 48px; color: var(--pink-dark);">Click the envelope to open!</p>
-                <button class="btn" id="btn-slide2" style="display: none;" onclick="nextSlide()">Continue ✨</button>
-            </div>
-
-            <div class="slide">
-                <h2>Why You? 🌷</h2>
-                <p>Klik kartu di bawah satu-satu ya!</p>
-                <div class="card-list">
-                    <div class="info-card" onclick="toggleCard(this)">
-                        <h4>01 — Your Energy <i class="fa-solid fa-chevron-down"></i></h4>
-                        <div class="card-content">Entah kenapa ngobrol sama lu tuh selalu punya cara sendiri buat bikin hari jadi lebih seru.</div>
-                    </div>
-                    <div class="info-card" onclick="toggleCard(this)">
-                        <h4>02 — Your Personality <i class="fa-solid fa-chevron-down"></i></h4>
-                        <div class="card-content">Lu punya vibe yang susah dijelasin, tapi gampang banget buat diinget.</div>
-                    </div>
-                    <div class="info-card" onclick="toggleCard(this)">
-                        <h4>03 — Your Existence <i class="fa-solid fa-chevron-down"></i></h4>
-                        <div class="card-content">Basically… you’re just someone genuinely worth appreciating.</div>
+    <div id="app">
+        
+        <div class="slide active" id="slide-0">
+            <div class="dreamhouse-door">
+                <div class="door-content card-box">
+                    <div class="badge-tag">🔒 PINTU MASUK</div>
+                    <h1>🎀 DUNIA BARBIE GARNIS 🎀</h1>
+                    <p class="subtitle">Sebuah tempat kecil yang entah kenapa dibuat khusus buat lu.</p>
+                    <div class="password-wrap">
+                        <label for="password-input">Masukin password dulu, Barbie.</label>
+                        <input type="password" id="password-input" placeholder="Hint: garnis / barbie / dll...">
+                        <button class="btn-primary" id="btn-login">BUKA DUNIA INI ✨</button>
+                        <p id="error-msg" class="error-text"></p>
                     </div>
                 </div>
-                <button class="btn" onclick="nextSlide()" style="margin-top: 20px;">Next Slide 🎀</button>
             </div>
-
-            <div class="slide">
-                <h2>Choose Your Mood 🎀</h2>
-                <p>Barbie, gimana perasaan lu hari ini?</p>
-                <div class="mood-grid">
-                    <button class="mood-btn" onclick="selectMood('sweet')">🌸 Sweet</button>
-                    <button class="mood-btn" onclick="selectMood('chaotic')">✨ Chaotic</button>
-                    <button class="mood-btn" onclick="selectMood('iconic')">💅 Iconic</button>
-                </div>
-                <div class="mood-result" id="moodResult"></div>
-                <button class="btn" onclick="nextSlide()">Next 💖</button>
-            </div>
-
-            <div class="slide">
-                <h2>Things You Deserve ✨</h2>
-                <div class="deserve-list">
-                    <div class="deserve-item"><i class="fa-solid fa-sun" style="color: #ffb74d;"></i> You deserve good days.</div>
-                    <div class="deserve-item"><i class="fa-solid fa-heart" style="color: #f48fb1;"></i> You deserve people who appreciate you.</div>
-                    <div class="deserve-item"><i class="fa-solid fa-smile" style="color: #ffd54f;"></i> You deserve random reasons to smile.</div>
-                    <div class="deserve-item"><i class="fa-solid fa-laptop" style="color: #ba68c8;"></i> And occasionally… a ridiculously unnecessary website.</div>
-                </div>
-                <p style="font-size: 0.85rem; font-weight: 700; color: var(--pink-dark);">Yep. This entire thing is that unnecessary website 😭💗</p>
-                <button class="btn" onclick="nextSlide()">Aww, Next! 🪩</button>
-            </div>
-
-            <div class="slide">
-                <h2>Barbie Photo Booth 🪩</h2>
-                <div class="booth-container">
-                    <div class="booth-avatar" id="avatarDisplay">💅</div>
-                    <p id="avatarCaption" style="font-weight: 700; color: var(--pink-dark);">Diva Mode Activated!</p>
-                    <div class="booth-controls">
-                        <span class="chip active" onclick="setBooth('💅', 'Diva Mode Activated!', this)">💅 Diva</span>
-                        <span class="chip" onclick="setBooth('🎀', 'Too Cute to Handle!', this)">🎀 Cute</span>
-                        <span class="chip" onclick="setBooth('🕶️', 'Too Cool for School', this)">🕶️ Cool</span>
-                        <span class="chip" onclick="setBooth('👑', 'Main Character Energy', this)">👑 Main Character</span>
-                    </div>
-                </div>
-                <button class="btn" onclick="nextSlide()" style="margin-top: 25px;">Read The Letter 💌</button>
-            </div>
-
-            <div class="slide">
-                <h2>The Actual Letter 💌</h2>
-                <div style="background: white; border: 2px solid var(--pink-accent); padding: 20px; border-radius: 20px; text-align: left; font-size: 0.9rem;">
-                    <p style="font-weight: bold; color: var(--pink-dark); margin-bottom: 8px;">To: Barbie 🎀<br><span style="font-weight: normal; font-size: 0.8rem; color: #888;">From: One of your random citizens</span></p>
-                    <p style="margin-bottom: 10px;">Gue cuma mau bilang terima kasih udah jadi temen yang seru dan selalu bawa vibe positif.</p>
-                    <p style="margin-bottom: 0;"><strong>Thanks for being someone I’m genuinely glad I got to know!</strong> Tetep jadi Barbie yang keren ya ✨</p>
-                </div>
-                <button class="btn" onclick="nextSlide()" style="margin-top: 20px;">One Last Thing 🌟</button>
-            </div>
-
-            <div class="slide">
-                <h2>Before You Leave... 🌟</h2>
-                <p>Ada satu hal penting terakhir nih.</p>
-                <button class="btn" style="background: #333;" onclick="triggerEasterEgg()">DON'T CLICK THIS 👀</button>
-            </div>
-
-            <div class="slide">
-                <h2>HAHA I KNEW IT! 🎁</h2>
-                <p>Gak bisa dibilangin ya, pasti tetep diklik 😂</p>
-                <div style="background: var(--pink-light); padding: 18px; border-radius: 20px; margin-bottom: 15px;">
-                    <p style="font-weight: 700; color: var(--pink-dark); margin-bottom: 5px;">Anyway, thanks for making it this far, Barbie! 🎀</p>
-                    <p style="font-size: 0.85rem; margin: 0;">Consider this your unnecessarily complicated digital gift.</p>
-                </div>
-                <p style="font-size: 0.8rem; color: #aaa;">Made with questionable amounts of effort 💗</p>
-                <button class="btn" onclick="goToSlide(0)">Replay 🔄</button>
-            </div>
-
         </div>
 
-        <div class="nav-controls">
-            <button class="nav-btn" id="prevBtn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
-            <div class="slide-dots" id="dotsContainer"></div>
-            <button class="nav-btn" id="nextBtn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="slide" id="slide-1">
+            <div class="card-box text-center">
+                <span class="badge-tag">🎀 SLIDE 1</span>
+                <h2>SELAMAT DATANG DI</h2>
+                <h1 class="main-title">DUNIA BARBIE GARNIS 🎀</h1>
+                <p class="dialogue">“Gua sebenarnya bisa aja ngirim ini lewat chat.”</p>
+                <p class="dialogue">“Tapi kayaknya terlalu biasa.”</p>
+                <p class="dialogue">“Jadi ya... gua bikin website sekalian.” 😭</p>
+                <button class="btn-primary" onclick="nextSlide(2)">MASUK →</button>
+            </div>
         </div>
+
+        <div class="slide" id="slide-2">
+            <div class="card-box letter-box">
+                <span class="badge-tag">💌 SLIDE 2</span>
+                <h2>KENAPA INI DIBUAT?</h2>
+                <div id="envelope-container" class="envelope-wrapper" onclick="openEnvelope()">
+                    <div class="envelope">
+                        <div class="envelope-text">💌 Klik untuk Buka Surat</div>
+                    </div>
+                </div>
+                <div id="letter-content" class="letter-content hidden">
+                    <p><strong>Dear Garnis,</strong></p>
+                    <p>Lu mungkin sekarang lagi mikir,<br><strong>“Ngapain sih bikin beginian?”</strong></p>
+                    <p>Jawabannya juga gua nggak tau.</p>
+                    <p>Awalnya cuma kepikiran buat bikin sesuatu yang beda. Soalnya kalau cuma bilang, <em>“makasih ya udah jadi temen yang seru,”</em> rasanya terlalu gampang.</p>
+                    <p>Jadi gua memilih jalan yang jauh lebih ribet: <strong>bikin satu website khusus buat lu.</strong> 😭</p>
+                    <p style="text-align: right; margin-top: 15px;"><em>Ya... kurang kerjaan memang.</em></p>
+                    <button class="btn-primary" onclick="nextSlide(3)">LANJUT, BARBIE →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <div class="card-box text-center">
+                <span class="badge-tag">👱‍♀️ SLIDE 3</span>
+                <h2>KENALAN DULU SAMA BARBIE-NYA 🎀</h2>
+                <div class="barbie-id-card" id="id-card" onclick="flipIdCard()">
+                    <div class="card-front" id="id-card-front">
+                        <div class="avatar-circle">👑</div>
+                        <h3>GARNIS</h3>
+                        <p><strong>JENIS:</strong> Barbie edisi terbatas</p>
+                        <p><strong>KELANGKAAN:</strong> ⭐⭐⭐⭐⭐</p>
+                        <p><strong>TINGKAT KE-CHAOS-AN:</strong> 87%</p>
+                        <p><strong>STATUS:</strong> Just Friend™</p>
+                        <span class="tap-hint">👆 Klik kartu untuk lihat fakta random!</span>
+                    </div>
+                    <div class="card-back hidden" id="id-card-back">
+                        <h3>🎀 FAKTA BARBIE</h3>
+                        <p id="fact-text" class="fact-display">Garnis punya kemampuan spesial: bikin percakapan random jadi panjang.</p>
+                        <span class="tap-hint">👆 Klik lagi untuk fakta berikutnya</span>
+                    </div>
+                </div>
+                <button class="btn-primary" style="margin-top: 20px;" onclick="nextSlide(4)">LANJUT →</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <div class="card-box">
+                <span class="badge-tag">🌸 SLIDE 4</span>
+                <h2>HAL-HAL KECIL YANG BIKIN LU JADI LU</h2>
+                <div class="grid-cards">
+                    <div class="small-card">
+                        <h3>🌸 Cara Lu Ngobrol</h3>
+                        <p>Kadang random banget. Kadang nggak jelas. Tapi justru itu yang bikin seru.</p>
+                    </div>
+                    <div class="small-card">
+                        <h3>🎀 Sisi Lu</h3>
+                        <p>Lu mungkin nggak sadar, tapi ada beberapa hal kecil dari diri lu yang bikin orang nyaman.</p>
+                    </div>
+                    <div class="small-card">
+                        <h3>😂 Kelakuan Random</h3>
+                        <p>Beberapa tingkah lu memang nggak selalu bisa dijelaskan secara ilmiah.</p>
+                    </div>
+                    <div class="small-card highlight-card">
+                        <h3>💗 Dan Yang Paling Penting...</h3>
+                        <p>Gua seneng pernah kenal sama lu. Sesimpel itu.</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-primary" onclick="nextSlide(5)">LANJUT KE TES BARBIE →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-5">
+            <div class="card-box">
+                <span class="badge-tag">🎮 SLIDE 5</span>
+                <h2>SEBERAPA BARBIE LU? 🎀</h2>
+                <p class="subtitle">Mari kita lakukan penelitian yang sangat tidak ilmiah.</p>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question">
+                        <p><strong>1. Kalau diajak pergi mendadak, lu bakal...</strong></p>
+                        <label><input type="radio" name="q1" value="A"> A. “Gas.”</label>
+                        <label><input type="radio" name="q1" value="B"> B. Tanya dulu pergi ke mana.</label>
+                        <label><input type="radio" name="q1" value="C"> C. Mager.</label>
+                        <label><input type="radio" name="q1" value="D"> D. Lihat mood.</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>2. Kalau lagi bad mood, biasanya...</strong></p>
+                        <label><input type="radio" name="q2" value="A"> A. Tidur.</label>
+                        <label><input type="radio" name="q2" value="B"> B. Dengerin lagu.</label>
+                        <label><input type="radio" name="q2" value="C"> C. Menghilang sementara.</label>
+                        <label><input type="radio" name="q2" value="D"> D. Tetap ngobrol seolah nggak terjadi apa-apa.</label>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>3. Pilih energi Barbie lu:</strong></p>
+                        <label><input type="radio" name="q3" value="A"> 🎀 Barbie Kalem</label>
+                        <label><input type="radio" name="q3" value="B"> 💅 Barbie Sassy</label>
+                        <label><input type="radio" name="q3" value="C"> 😂 Barbie Chaos</label>
+                        <label><input type="radio" name="q3" value="D"> 🌸 Barbie Soft</label>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-primary" onclick="submitQuiz()">LIHAT HASIL GUA →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-6">
+            <div class="card-box text-center">
+                <span class="badge-tag">💅 SLIDE 6</span>
+                <p>✨ <strong>HASIL PENELITIAN</strong> ✨</p>
+                <p style="font-size: 0.9rem; color: #666;">Setelah dilakukan penelitian yang sebenarnya tidak punya dasar ilmiah...</p>
+                <h3>LU ADALAH</h3>
+                <h1 class="result-title">😂 CHAOTIC BARBIE</h1>
+                <div class="stats-box">
+                    <p>Barbie Energy: <strong>97%</strong></p>
+                    <p>Chaos: <strong>91%</strong></p>
+                    <p>Lucu: <strong>88%</strong></p>
+                    <p>Random: <strong>104%</strong></p>
+                    <p>Main Character: <strong>100%</strong></p>
+                </div>
+                <p class="conclusion">Lu bukan Barbie biasa.<br>Lu adalah Barbie yang kalau hidupnya dijadiin film, kemungkinan besar genrenya <strong>komedi.</strong> 😭</p>
+                <button class="btn-primary" onclick="nextSlide(7)">TERIMA TAKDIR 🎀</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-7">
+            <div class="card-box certificate-box text-center">
+                <span class="badge-tag">🏆 SLIDE 7</span>
+                <h2>🎀 SERTIFIKAT RESMI 🎀</h2>
+                <p>Dengan ini dinyatakan bahwa</p>
+                <h1 class="cert-name">GARNIS</h1>
+                <p>telah berhasil mendapatkan gelar:</p>
+                <h3>✨ BARBIE TERSERTIFIKASI ✨</h3>
+                <p class="cert-desc">Setelah melalui berbagai penelitian, pengamatan, dan sedikit halusinasi, hasil akhirnya telah ditetapkan:</p>
+                <p style="font-size: 1.2rem; font-weight: bold; color: #ff3366;">LU EMANG BARBIE.</p>
+                <p style="font-size: 0.85rem; color: #555;">Status: <strong>Just Friend™</strong><br><em>Nggak ada kenaikan jabatan. Temenan aja udah bagus. 😭</em></p>
+                
+                <div id="stamp" class="stamp hidden">DISETUJUI OLEH DEWAN BARBIE ✓</div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn-secondary" id="btn-stamp" onclick="applyStamp()">CAP RESMI ✓</button>
+                    <button class="btn-primary" id="btn-next-7" style="display:none; margin-left: 10px;" onclick="nextSlide(8)">LANJUT →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-8">
+            <div class="card-box soft-letter text-center">
+                <span class="badge-tag">💌 SLIDE 8</span>
+                <h2>TAPI SERIUS DIKIT...</h2>
+                <div class="typing-text-wrap">
+                    <p>Gua cuma mau bilang,</p>
+                    <p><strong>makasih ya.</strong></p>
+                    <p>Makasih buat semua obrolan random, candaan nggak jelas, cerita-cerita kecil, dan momen-momen yang mungkin menurut lu biasa aja.</p>
+                    <p>Mungkin lu nggak sadar, tapi keberadaan seseorang kadang bisa bikin hari biasa jadi sedikit lebih menyenangkan.</p>
+                    <p>Dan gua bersyukur pernah kenal sama lu.</p>
+                    <p><strong>Makasih udah jadi Garnis. 🎀</strong></p>
+                </div>
+                <button class="btn-primary" style="margin-top: 20px;" onclick="nextSlide(9)">LANJUT →</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-9">
+            <div class="card-box text-center">
+                <span class="badge-tag">🎁 SLIDE 9</span>
+                <h2>EH, MASIH ADA SATU LAGI.</h2>
+                <p>Katanya website yang niat harus punya hadiah. Jadi...</p>
+                
+                <div id="gift-box" class="gift-box-wrap" onclick="openGift()">
+                    <div class="gift-icon">🎁</div>
+                    <p><strong>[ BUKA HADIAH 🎁 ]</strong></p>
+                </div>
+
+                <div id="gift-content" class="hidden gift-result">
+                    <p>🎀 <strong>BUAT GARNIS</strong></p>
+                    <p>Gua nggak punya hadiah mahal. Jadi sebagai gantinya:</p>
+                    <p><strong>sebuah website yang terlalu niat untuk ukuran teman.</strong> 😭</p>
+                    <p>Tapi ada satu hal yang beneran:</p>
+                    <p style="font-size: 1.1rem; color: #ff3366;"><strong>Lu dihargai.</strong></p>
+                    <p>Jangan lupa itu.</p>
+                    <button class="btn-primary" style="margin-top: 15px;" onclick="nextSlide(10)">LANJUT →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-10">
+            <div class="card-box text-center">
+                <span class="badge-tag">🥚 SLIDE 10</span>
+                <h2>SELESAI 🎀</h2>
+                <p>Makasih udah sampai sini.</p>
+                <button class="btn-secondary" onclick="nextSlide(11)">KELUAR</button>
+                
+                <div class="secret-star" onclick="triggerEasterEgg()" title="Ada sesuatu?">⭐</div>
+                
+                <div id="easter-egg-box" class="hidden easter-box">
+                    <p id="ee-text">🚨 <strong>LAH KOK LU NEMU INI?!</strong></p>
+                    <button class="btn-primary" id="ee-btn" onclick="nextEasterStep()">JANGAN KLIK</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide night-mode" id="slide-11">
+            <div class="card-box text-center night-card">
+                <span class="badge-tag">🌙 ENDING</span>
+                <h2>DAN... SELESAI. 🎀</h2>
+                <p>Jadi ya...</p>
+                <p>Itu tadi website kecil yang entah kenapa gua bikin khusus buat lu. Nggak ada maksud yang aneh-aneh. Cuma pengen bikin sesuatu yang mungkin bisa bikin lu senyum sebentar.</p>
+                <p>Semoga lu suka.</p>
+                <p><strong>— dari just friend lu yang terlalu niat. 🎀</strong></p>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn-primary" onclick="restartWebsite()">ULANGI DARI AWAL ↻</button>
+                </div>
+                <p class="footer-note"><em>“Barbie World milik Garnis — 2026”</em></p>
+            </div>
+        </div>
+
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dotsContainer = document.getElementById('dotsContainer');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-
-        // Dynamically add dots
-        slides.forEach((_, idx) => {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if (idx === 0) dot.classList.add('active');
-            dotsContainer.appendChild(dot);
-        });
-
-        const dots = document.querySelectorAll('.dot');
-
-        function updateSlides() {
-            slides.forEach((slide, idx) => {
-                slide.classList.toggle('active', idx === currentSlide);
-                dots[idx].classList.toggle('active', idx === currentSlide);
-            });
-
-            prevBtn.disabled = currentSlide === 0;
-            nextBtn.disabled = currentSlide === slides.length - 1;
-
-            if (currentSlide === 4) {
-                const items = document.querySelectorAll('.deserve-item');
-                items.forEach((item, index) => {
-                    setTimeout(() => item.classList.add('show'), index * 300);
-                });
-            }
-        }
-
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                currentSlide++;
-                updateSlides();
-            }
-        }
-
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlides();
-            }
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateSlides();
-        }
-
-        function openEnvelope() {
-            document.getElementById('env-icon').className = 'fa-solid fa-envelope-open';
-            document.getElementById('env-text').innerText = "Apparently, someone thought you deserved a tiny surprise today ✨";
-            document.getElementById('btn-slide2').style.display = 'inline-flex';
-        }
-
-        function toggleCard(card) {
-            card.classList.toggle('open');
-            const icon = card.querySelector('i');
-            icon.className = card.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
-        }
-
-        function selectMood(mood) {
-            const result = document.getElementById('moodResult');
-            if (mood === 'sweet') result.innerText = "“Okay Barbie, we see you being adorable today 🌸”";
-            if (mood === 'chaotic') result.innerText = "“Yeah… that sounds about right ✨”";
-            if (mood === 'iconic') result.innerText = "“Obviously. Did you expect anything else? 💅”";
-        }
-
-        function setBooth(emoji, caption, chip) {
-            document.getElementById('avatarDisplay').innerText = emoji;
-            document.getElementById('avatarCaption').innerText = caption;
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-        }
-
-        function triggerEasterEgg() {
-            confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-            nextSlide();
-        }
-
-        updateSlides();
     <script src="script.js"></script>
 </body>
-</html>
+                                                                                                                        </html>
