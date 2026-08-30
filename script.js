@@ -1,92 +1,134 @@
-let currentSlide = 0;
-const slides = document.querySelectorAll('.slide');
-const dotsContainer = document.getElementById('dotsContainer');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-
-// Generate titik navigasi (dots) otomatis sesuai jumlah slide
-slides.forEach((_, idx) => {
-    const dot = document.createElement('div');
-    dot.classList.add('dot');
-    if (idx === 0) dot.classList.add('active');
-    dotsContainer.appendChild(dot);
-});
-
-const dots = document.querySelectorAll('.dot');
-
-// Fungsi utama perpindahan slide
-function updateSlides() {
-    slides.forEach((slide, idx) => {
-        slide.classList.toggle('active', idx === currentSlide);
-        dots[idx].classList.toggle('active', idx === currentSlide);
+// Fungsi untuk berpindah slide
+function nextSlide(slideNumber) {
+    // Sembunyikan semua slide
+    const slides = document.querySelectorAll('.slide');
+    slides.forEach(slide => {
+        slide.classList.remove('active');
     });
 
-    prevBtn.disabled = currentSlide === 0;
-    nextBtn.disabled = currentSlide === slides.length - 1;
-
-    // Animasi bertahap untuk Slide 5
-    if (currentSlide === 4) {
-        const items = document.querySelectorAll('.deserve-item');
-        items.forEach((item, index) => {
-            setTimeout(() => item.classList.add('show'), index * 300);
-        });
+    // Tampilkan slide tujuan
+    const targetSlide = document.getElementById('slide-' + slideNumber);
+    if (targetSlide) {
+        targetSlide.classList.add('active');
+        window.scrollTo(0, 0);
     }
 }
 
-function nextSlide() {
-    if (currentSlide < slides.length - 1) {
-        currentSlide++;
-        updateSlides();
+// Slide 0: Password Check
+document.getElementById('btn-login').addEventListener('click', function() {
+    const passInput = document.getElementById('password-input').value.trim().toLowerCase();
+    const errorMsg = document.getElementById('error-msg');
+
+    // Password yang valid: "garnis", "barbie", "cantik", atau "123"
+    if (passInput === 'garnis' || passInput === 'barbie' || passInput === 'cantik' || passInput === '123') {
+        errorMsg.textContent = "";
+        alert("✨ AKSES DITERIMA ✨\n\nSelamat datang, Garnis.\nSilakan masuk ke dunia lu sendiri. 🎀");
+        nextSlide(1);
+    } else {
+        errorMsg.textContent = "❌ Eits, salah. Barbie kok lupa password sendiri 😭 Coba lagi.";
     }
-}
+});
 
-function prevSlide() {
-    if (currentSlide > 0) {
-        currentSlide--;
-        updateSlides();
+// Shortcut tekan Enter di input password
+document.getElementById('password-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('btn-login').click();
     }
-}
+});
 
-function goToSlide(index) {
-    currentSlide = index;
-    updateSlides();
-}
-
-/* Interaksi Slide 2: Amplop */
+// Slide 2: Buka Amplop
+let envelopeOpened = false;
 function openEnvelope() {
-    document.getElementById('env-icon').className = 'fa-solid fa-envelope-open';
-    document.getElementById('env-text').innerText = "Apparently, someone thought you deserved a tiny surprise today ✨";
-    document.getElementById('btn-slide2').style.display = 'inline-flex';
+    if (!envelopeOpened) {
+        envelopeOpened = true;
+        document.getElementById('envelope-container').style.display = 'none';
+        document.getElementById('letter-content').classList.remove('hidden');
+    }
 }
 
-/* Interaksi Slide 3: Kartu Accordion */
-function toggleCard(card) {
-    card.classList.toggle('open');
-    const icon = card.querySelector('i');
-    icon.className = card.classList.contains('open') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+// Slide 3: Fakta Barbie Bergantian
+const facts = [
+    "🎀 Fakta #1\nGarnis punya kemampuan spesial: bikin percakapan random jadi panjang.",
+    "💗 Fakta #2\nEntah kenapa, keberadaan lu bikin suasana jadi lebih seru.",
+    "😂 Fakta #3\nTingkat random lu kadang nggak masuk akal."
+];
+let currentFactIndex = 0;
+
+function flipIdCard() {
+    const front = document.getElementById('id-card-front');
+    const back = document.getElementById('id-card-back');
+    const factText = document.getElementById('fact-text');
+
+    if (front.classList.contains('hidden')) {
+        front.classList.remove('hidden');
+        back.classList.add('hidden');
+    } else {
+        front.classList.add('hidden');
+        back.classList.remove('hidden');
+        factText.innerText = facts[currentFactIndex];
+        currentFactIndex = (currentFactIndex + 1) % facts.length;
+    }
 }
 
-/* Interaksi Slide 4: Pilih Mood */
-function selectMood(mood) {
-    const result = document.getElementById('moodResult');
-    if (mood === 'sweet') result.innerText = "“Okay Barbie, we see you being adorable today 🌸”";
-    if (mood === 'chaotic') result.innerText = "“Yeah… that sounds about right ✨”";
-    if (mood === 'iconic') result.innerText = "“Obviously. Did you expect anything else? 💅”";
+// Slide 5: Submit Quiz
+function submitQuiz() {
+    nextSlide(6);
 }
 
-/* Interaksi Slide 6: Photo Booth */
-function setBooth(emoji, caption, chip) {
-    document.getElementById('avatarDisplay').innerText = emoji;
-    document.getElementById('avatarCaption').innerText = caption;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
+// Slide 7: Stempel Sertifikat
+function applyStamp() {
+    document.getElementById('stamp').classList.remove('hidden');
+    document.getElementById('btn-stamp').style.display = 'none';
+    document.getElementById('btn-next-7').style.display = 'inline-block';
 }
 
-/* Interaksi Slide 8 & 9: Easter Egg Confetti */
+// Slide 9: Buka Hadiah
+function openGift() {
+    document.getElementById('gift-box').style.display = 'none';
+    document.getElementById('gift-content').classList.remove('hidden');
+}
+
+// Slide 10: Easter Egg Steps
+let easterStep = 0;
 function triggerEasterEgg() {
-    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-    nextSlide();
+    const eeBox = document.getElementById('easter-egg-box');
+    eeBox.classList.remove('hidden');
 }
 
-// Inisialisasi tampilan awal
-updateSlides();
+function nextEasterStep() {
+    const eeText = document.getElementById('ee-text');
+    const eeBtn = document.getElementById('ee-btn');
+
+    easterStep++;
+    if (easterStep === 1) {
+        eeText.innerHTML = "Gua udah bilang jangan diklik.";
+    } else if (easterStep === 2) {
+        eeText.innerHTML = "Garnis...";
+    } else if (easterStep === 3) {
+        eeText.innerHTML = "<strong>YA AMPUN LU PENASARAN BANGET 😭</strong>";
+    } else {
+        eeText.innerHTML = "Oke deh.<br><strong>Lu menang. 🏳️</strong>";
+        eeBtn.innerText = "LANJUT KE ENDING →";
+        eeBtn.onclick = function() { nextSlide(11); };
+    }
+}
+
+// Restart Website
+function restartWebsite() {
+    easterStep = 0;
+    currentFactIndex = 0;
+    document.getElementById('password-input').value = "";
+    document.getElementById('error-msg').textContent = "";
+    document.getElementById('envelope-container').style.display = 'block';
+    document.getElementById('letter-content').classList.add('hidden');
+    document.getElementById('id-card-front').classList.remove('hidden');
+    document.getElementById('id-card-back').classList.add('hidden');
+    document.getElementById('stamp').classList.add('hidden');
+    document.getElementById('btn-stamp').style.display = 'inline-block';
+    document.getElementById('btn-next-7').style.display = 'none';
+    document.getElementById('gift-box').style.display = 'block';
+    document.getElementById('gift-content').classList.add('hidden');
+    document.getElementById('easter-egg-box').classList.add('hidden');
+    
+    nextSlide(0);
+}
